@@ -88,6 +88,7 @@ Phase 2 complete. Proceed with refactoring (Phase 3)? [y/n]
 PHASE 3: REFACTORING COMPLETE
 ================================
 ## New Project Structure
+src/
 ├── config/settings.py
 ├── models/
 │   ├── produto_model.py
