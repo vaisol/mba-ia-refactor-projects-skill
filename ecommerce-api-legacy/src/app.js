@@ -1,7 +1,7 @@
 const express = require('express');
-const config = require('./src/config');
-const { initDb } = require('./src/config/database');
-const routes = require('./src/routes');
+const config = require('./config');
+const { initDb } = require('./AppManager');
+const routes = require('./routes');
 
 const app = express();
 app.use(express.json());
