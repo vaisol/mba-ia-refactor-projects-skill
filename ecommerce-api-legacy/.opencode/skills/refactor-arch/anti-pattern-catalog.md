@@ -255,3 +255,29 @@ Catalog of architectural anti-patterns and code smells for web applications. Eac
 **Impact:** Difficult to debug production issues, inconsistent error responses, potential data corruption on partial failures.
 
 **Fix:** Catch specific exceptions, use centralized error handling middleware, return consistent error response format, log errors properly.
+
+---
+
+## 15. Orphaned Controller Functions / Unreachable Endpoints
+
+**Severity:** HIGH
+
+**Detection Signals:**
+- Controller functions that are exported but never imported or called by any route file
+- Model methods (CRUD operations) that exist but are not reachable through any controller→route chain
+- Domain entities (e.g., users, courses, enrollments) with model functions but no corresponding REST endpoints
+- CRUD asymmetry: some operations (e.g., DELETE) are exposed but others (GET, POST, PUT) for the same entity are missing
+- Route file imports a function from a controller that doesn't export it (or exports a different name)
+- Controller files that contain logic for a domain different from what the filename suggests (e.g., `deleteUser` inside `checkout_controller.js`)
+
+**How to detect:**
+1. Enumerate every exported function from every controller file
+2. Enumerate every route handler in the route registration file(s)
+3. Cross-reference: any controller function NOT referenced by a route is orphaned
+4. Enumerate every model function
+5. Trace the call chain from routes → controllers → models; any model function with no path to a route is unreachable
+6. For each domain entity, check if all standard CRUD operations (list, get, create, update, delete) have corresponding routes
+
+**Impact:** Business logic is inaccessible via the API, incomplete features silently shipped, model layer is underutilized, inconsistent API surface confuses consumers.
+
+**Fix:** Create missing routes for orphaned controller functions. Create new controllers for domain entities that only have model functions. Ensure every domain entity has a complete set of CRUD endpoints. Move misplaced functions to the correct controller file.

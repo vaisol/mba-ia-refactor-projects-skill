@@ -90,11 +90,21 @@ Entry point:   [entry point file]
      - **Recommendation** for fixing
 
 3. **Check for deprecated APIs:**
-   - Look for deprecated function calls, library methods, or patterns
-   - Common examples:
-     - Python: `@app.before_first_request` (removed in Flask 2.3), `werkzeug.contrib` (removed)
-     - Node.js: `new Buffer()` (deprecated), `url.parse()` (deprecated in favor of `new URL()`), `path.exists` (deprecated)
-     - Express: `app.del()` (use `app.delete()`), `res.json(status, obj)` (use `res.status(status).json(obj)`)
+    - Look for deprecated function calls, library methods, or patterns
+    - Common examples:
+      - Python: `@app.before_first_request` (removed in Flask 2.3), `werkzeug.contrib` (removed)
+      - Node.js: `new Buffer()` (deprecated), `url.parse()` (deprecated in favor of `new URL()`), `path.exists` (deprecated)
+      - Express: `app.del()` (use `app.delete()`), `res.json(status, obj)` (use `res.status(status).json(obj)`)
+
+4. **Check for orphaned controller functions and unreachable endpoints (CRITICAL):**
+    This step catches the class of bug where the data layer exists but is not exposed via HTTP.
+    - **Step A — Enumerate all route registrations:** Read every route file. List each registered endpoint as `(method, path, handler_function)`.
+    - **Step B — Enumerate all controller exports:** Read every controller file. List each exported function.
+    - **Step C — Cross-reference routes vs controllers:** Any controller function NOT called by a registered route is **orphaned**. Flag it as HIGH.
+    - **Step D — Enumerate all model functions:** Read every model file. List each exported function.
+    - **Step E — Trace route→controller→model chains:** For each model function, verify there is a complete call path from a registered route through a controller to that model function. Any model function with no path to a route is **unreachable**. Flag it as HIGH.
+    - **Step F — Check CRUD completeness per domain entity:** Group controllers and models by domain entity (e.g., users, courses, enrollments). For each entity, check whether standard CRUD operations (list, get, create, update, delete) have corresponding routes. Report missing operations as HIGH.
+    - **Step G — Check controller file placement:** Verify that each controller function lives in a file named for its domain (e.g., `deleteUser` should be in `user_controller.js`, not `checkout_controller.js`). Flag misplaced functions as MEDIUM.
 
 4. **Generate the audit report:**
    - Read `report-template.md` for the exact format
@@ -175,10 +185,12 @@ Total: [N] findings
    - Fix security issues (hardcoded secrets, weak crypto, SQL injection)
    - Eliminate duplicated code by extracting shared utilities
 
-5. **Ensure all original endpoints are preserved:**
-   - List every endpoint from the original code
-   - Verify each one exists in the new structure
-   - Ensure request/response format is identical
+5. **Ensure all original endpoints are preserved AND all domain entities have complete CRUD:**
+    - List every endpoint from the original code
+    - Verify each one exists in the new structure
+    - Ensure request/response format is identical
+    - Additionally, verify that every domain entity (user, course, enrollment, etc.) has full CRUD endpoints: GET /api/{entity} (list), GET /api/{entity}/:id (get), POST /api/{entity} (create), PUT /api/{entity}/:id (update), DELETE /api/{entity}/:id (delete)
+    - If the original code had model functions for an entity but no routes, create the missing controllers and routes during refactoring
 
 6. **Validate the refactored application:**
    - **Install dependencies:** Run the appropriate install command (`pip install -r requirements.txt` or `npm install`)
@@ -218,10 +230,12 @@ Changes Made:
 
 3. **Preserve all endpoints.** Every API endpoint that existed before refactoring must exist after, with the same URL, HTTP method, and response format.
 
-4. **Preserve seed data.** If the project has seed/fixture data, keep it in a `seed.py` or similar file at the project root.
+4. **Complete the API surface.** If a domain entity has model functions but no routes, or has only some CRUD operations exposed, create the missing controllers and routes during refactoring. An entity with a model but no routes is a bug, not a feature.
 
-5. **Config must use environment variables.** Replace all hardcoded secrets and configuration values with `os.environ.get()` calls, with sensible defaults for development.
+5. **Preserve seed data.** If the project has seed/fixture data, keep it in a `seed.py` or similar file at the project root.
 
-6. **Always pause between Phase 2 and Phase 3.** The user MUST review the audit report before any files are modified.
+6. **Config must use environment variables.** Replace all hardcoded secrets and configuration values with `os.environ.get()` calls, with sensible defaults for development.
 
-7. **Validation is mandatory.** Phase 3 is not complete until the application boots and endpoints respond. If boot fails, fix the errors before declaring completion.
+7. **Always pause between Phase 2 and Phase 3.** The user MUST review the audit report before any files are modified.
+
+8. **Validation is mandatory.** Phase 3 is not complete until the application boots and endpoints respond. If boot fails, fix the errors before declaring completion.

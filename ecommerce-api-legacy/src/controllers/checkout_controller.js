@@ -38,11 +38,6 @@ async function checkout(userName, email, password, courseId, cardNumber) {
     return { msg: "Sucesso", enrollment_id: enrollmentId };
 }
 
-async function deleteUser(userId) {
-    await userModel.deleteById(userId);
-    return { message: "Usuário deletado com sucesso" };
-}
-
 class AppError extends Error {
     constructor(message, statusCode = 400) {
         super(message);
@@ -50,4 +45,4 @@ class AppError extends Error {
     }
 }
 
-module.exports = { checkout, deleteUser, AppError };
+module.exports = { checkout, AppError };
