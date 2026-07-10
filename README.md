@@ -106,9 +106,9 @@ A skill foi criada em `.opencode/skills/refactor-arch/` com 6 arquivos:
 
 | Projeto | Stack | CRITICAL | HIGH | MEDIUM | LOW | Total |
 |---------|-------|----------|------|--------|-----|-------|
-| code-smells-project | Python/Flask | 4 | 4 | 2 | 3 | **13** |
-| ecommerce-api-legacy | Node.js/Express | 3 | 4 | 2 | 2 | **11** |
-| task-manager-api | Python/Flask | 3 | 3 | 3 | 3 | **12** |
+| code-smells-project | Python/Flask | 4 | 4 | 2 | 3 | **13** | [Relatório](reports/audit-project-1.md) |
+| ecommerce-api-legacy | Node.js/Express | 3 | 4 | 2 | 2 | **11** | [Relatório](reports/audit-project-2.md) |
+| task-manager-api | Python/Flask | 3 | 3 | 3 | 3 | **12** | [Relatório](reports/audit-project-3.md) |
 | **Total** | | **10** | **11** | **7** | **8** | **36** |
 
 ### Comparação Antes/Depois
@@ -124,6 +124,8 @@ A skill foi criada em `.opencode/skills/refactor-arch/` com 6 arquivos:
 | `print()` como notificação | Serviço de notificação via logging |
 | Erro handling genérico | Middleware centralizado de erros |
 
+📄 **Relatório completo:** [reports/audit-project-1.md](reports/audit-project-1.md)
+
 #### ecommerce-api-legacy
 
 | Antes | Depois |
@@ -135,6 +137,8 @@ A skill foi criada em `.opencode/skills/refactor-arch/` com 6 arquivos:
 | Card number em plaintext + log | Serviço de pagamento sem exposição |
 | Registros órfãos no delete | Cascade delete implementado |
 
+📄 **Relatório completo:** [reports/audit-project-2.md](reports/audit-project-2.md)
+
 #### task-manager-api
 
 | Antes | Depois |
@@ -145,6 +149,8 @@ A skill foi criada em `.opencode/skills/refactor-arch/` com 6 arquivos:
 | Overdue duplicado 3x | `is_overdue()` no model, usado em todos os lugares |
 | Categorias misturadas com reports | `category_routes.py` separado |
 | Erro handling em cada rota | Middleware centralizado |
+
+📄 **Relatório completo:** [reports/audit-project-3.md](reports/audit-project-3.md)
 
 ### Checklist de Validação
 
