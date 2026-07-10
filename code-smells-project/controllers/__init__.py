@@ -1,0 +1,1 @@
+from controllers import produto_controller, usuario_controller, pedido_controller, relatorio_controller

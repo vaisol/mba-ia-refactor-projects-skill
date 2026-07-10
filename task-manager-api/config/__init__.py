@@ -1,0 +1,1 @@
+from config.settings import SECRET_KEY, DEBUG, HOST, PORT, SQLALCHEMY_DATABASE_URI
